@@ -133,6 +133,7 @@ void gameController::snakemove()
 		}
 		i_snake = i_snake + 1;
 		snake1.setsnake(i_snake, ROW, COLUM);
+		score();
 		drawsnake(snake1.getlang());
 		i = 1;
 	}
@@ -232,17 +233,31 @@ void gameController::checkpoint()
 	int x;
 	int y;
 	srand(time(0));
+	x = rand() % 45;
+	y = rand() % 80;
 	for (int i = 0; i < snake1.getlang(); i++) {
-		x = rand() % 80;
-	    y = rand() % 45;
 		int row = snake1.getsnakerow(i);
 		int colum = snake1.getsnakecolum(i);
-		if (x== row && y==colum )
+		for (;x== row && y==colum ;)
 		{
-
+			x = rand() % 45;
+			y = rand() % 80;
 		}  
-	   checkPoint.setpoint(1,1);
+	   checkPoint.setpoint(x,y);
 	}	
+}
+
+void gameController::drawcheekpoint( bool t)
+{
+	if (t)
+	{
+		screen->setChar(checkPoint.getrow(), checkPoint.getcolum(), 'B');
+		screen->flushScreen();
+	}
+	else {
+		screen->setChar(checkPoint.getrow(), checkPoint.getcolum(), ' ');
+		screen->flushScreen();
+	}
 }
 	
 void gameController::drawMenu(bool t) {
@@ -330,14 +345,35 @@ int Snake::getlang()
 	return lang;
 }
 
-void Snake::score()
+void gameController::score()
 {
-	lang = lang + 1;
+	if (snake1.getsnakerow(I)==checkPoint.getrow()&&snake1.getsnakecolum(I)==checkPoint.getcolum())
+	{
+		snake1.setlang();
+		checkpoint();
+		drawcheekpoint();
+	}
+}
+
+void gameController::gamestart()
+{
+	static int i = 0;
+	i = i++;
+	if (i == 1) {
+		checkpoint();
+		drawcheekpoint();
+	}
+	snakemove();
 }
 
 string Snake::gethead()
 {
 	return string(head);
+}
+
+void Snake::setlang()
+{
+	lang = lang + 1;
 }
 
 point::point()

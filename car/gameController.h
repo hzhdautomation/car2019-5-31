@@ -46,15 +46,15 @@ private:
 	int health = 1;
 	point snakepoint[3000];
 	string head = "right";
-	int lang = 10;
+	int lang = 1;
 public:
 	int getsnakerow(unsigned int i);
 	int getsnakecolum(unsigned int i);
 	void setsnake(unsigned int i, unsigned int row, unsigned int colum);
 	void changehead(string head);
 	int getlang();
-	void score();
 	string gethead();
+	void setlang();
 };
 
 class gameController {
@@ -62,7 +62,7 @@ private:
 	Drawing* screen = nullptr;
 	menuItem* root = nullptr;
 	menuItem* currentPointer = nullptr;
-	int hard = 15;
+	int hard = 50;
 	point checkPoint;
 public:
 	Snake snake1;
@@ -78,4 +78,7 @@ public:
 	void  running();
 	void initialize();
 	void checkpoint();
+	void drawcheekpoint( bool t = true);
+	void score();
+	void gamestart();
 };
