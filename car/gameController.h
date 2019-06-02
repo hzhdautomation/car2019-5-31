@@ -22,6 +22,13 @@ using namespace std;
 	Ω· ¯”Œœ∑
 */
 
+class event {
+private:
+	string state="menu";
+public:
+	void changestate(string st);
+	string getstate();
+};
 class menuItem {
 public:
 	menuItem();
@@ -54,7 +61,11 @@ public:
 	void changehead(string head);
 	int getlang();
 	string gethead();
-	void setlang();
+	void addlang();
+	void resetlang();
+	void Health();
+	int getHealth();
+	void resethealth();
 };
 
 class gameController {
@@ -62,10 +73,11 @@ private:
 	Drawing* screen = nullptr;
 	menuItem* root = nullptr;
 	menuItem* currentPointer = nullptr;
-	int hard = 50;
+	int hard = 150;
 	point checkPoint;
-public:
+	event event;
 	Snake snake1;
+public:
 	gameController();
 	void drawMenu(bool t = true);
 	void drawBackground();
@@ -81,4 +93,5 @@ public:
 	void drawcheekpoint( bool t = true);
 	void score();
 	void gamestart();
+	void dead();
 };

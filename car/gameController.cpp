@@ -1,11 +1,11 @@
 #include "gameController.h"
 #include <fstream>
 
-
 int row = 13;
 int i = 0;
 int i_running = 0;
 int i_cursor = 0;
+int i_dead = 0;
 int i_snake = 1;
 static int I = 1;
 
@@ -69,12 +69,12 @@ void gameController::drawCursor(bool t)
 {
 	if (t)
 	{
-    screen->setChar(row, 40, '>');
+    screen->setChar(row, 33, '>');
 	screen->flushScreen();
 	}
 	else
 	{
-	screen->setChar(row, 40, ' ');
+	screen->setChar(row, 33, ' ');
 	screen->flushScreen();
 	}	
 }
@@ -91,17 +91,43 @@ void gameController::snakemove()
 	{		
 		if (key == "up")	{
 			snake1.changehead("up");
+			if (snake1.gethead()=="up")
+			{
+				hard = 20;
+			}
 		}
 		if (key == "down") {
 			snake1.changehead("down");
+			if (snake1.gethead() == "down")
+			{
+				hard = 20;
+			}
 		}
 		if (key == "left") {
 			snake1.changehead("left");
+			if (snake1.gethead() == "left")
+			{
+				hard = 20;
+			}
 		}
 		if (key == "right") {
 			snake1.changehead("right");
+			if (snake1.gethead() == "right")
+			{
+				hard = 20;
+			}
 		}
+		if (key == "esc") {
+			event.changestate("pause");
+			initialize();
+			drawCursor();
+			drawMenu();
+		}	
 	}
+	else
+		{
+			hard = 2;
+		}
 	if (i > hard) {
 		if (snake1.gethead() == "up")
 		{
@@ -134,6 +160,11 @@ void gameController::snakemove()
 		i_snake = i_snake + 1;
 		snake1.setsnake(i_snake, ROW, COLUM);
 		score();
+		snake1.Health();
+		if (snake1.getHealth()==0)
+		{
+			dead();
+		}
 		drawsnake(snake1.getlang());
 		i = 1;
 	}
@@ -181,13 +212,14 @@ return "null";
 void gameController::running()
 {
 	static string last_key = "null";
+	string key;
 	if (i_running == 0)
 	{
 		this->drawMenu();
 		this->drawCursor();
 	}
 	i_running = i_running++;
-	string key = Action();
+	key = Action();
 	if (key!="null" && last_key=="null")
 	{
 		if (key=="up")
@@ -195,21 +227,76 @@ void gameController::running()
 			drawCursor(false);
 			upCursor();
 			drawCursor();
+			last_key = key;
+			key = "null";
 		}
 		if (key == "down")
 		{
 			drawCursor(false);
 			downCursor();
 			drawCursor();
+			last_key = key;
+			key = "null";
 		}
-		if (key == "enter")
+		while (key == "enter")
 		{
 				if (currentPointer->items[i_cursor]->items.size() != 0)
 				{
 					this->drawMenu(false);
 					currentPointer = currentPointer->items[i_cursor];
+					drawCursor();
 					this->drawMenu();
-				}			
+					last_key = key;
+					key = "null";
+					break;
+				}
+				if (currentPointer->items[i_cursor]->name=="重新开始")
+				{
+					i_dead = 1;
+					snake1.resethealth();
+					drawCursor(false);
+					event.changestate("newgame");
+					this->drawMenu(false);
+					snake1.resetlang();
+					checkpoint();
+					drawcheekpoint();
+					last_key = key;
+					key = "null";
+					break;
+				}
+				if (currentPointer->items[i_cursor]->name == "继续游戏")
+				{
+					if (snake1.getsnakerow(I)!=0||snake1.getsnakecolum(I)!=0||snake1.getlang()!=1||i_dead!=0)
+					{
+                    drawCursor(false);
+					event.changestate("continue");
+					this->drawMenu(false);
+					drawCursor(false);
+					drawMenu(false);
+					drawcheekpoint();
+					for (int i = 0; i < snake1.getlang(); i++)
+					{
+						screen->setPixel(snake1.getsnakerow(I - i), snake1.getsnakecolum(I - i), true);
+					}
+					last_key = key;
+					key = "null";
+					break;
+					}
+					else {
+						last_key = key;
+						key = "null";
+						break;
+					}
+				}
+				if (currentPointer->items[i_cursor]->name == "返回")
+				{
+					currentPointer = currentPointer->father;
+					this->drawMenu();
+					last_key = key;
+					key = "null";
+					break;
+				}
+
 		}
 		if (key == "esc")
 		{
@@ -217,15 +304,21 @@ void gameController::running()
                 this->drawMenu(false);
 				currentPointer = currentPointer->father;
 				this->drawMenu();
-			}					
+				last_key = key;
+				key = "null";
+			}
 		}
 	}
-last_key = key;
+	else
+	{
+		last_key = key;
+	}
 }
 
 void gameController::initialize()
 {
 	screen->clearScreen();
+	screen->flushScreen();
 }
 
 void gameController::checkpoint()
@@ -233,17 +326,17 @@ void gameController::checkpoint()
 	int x;
 	int y;
 	srand(time(0));
-	x = rand() % 45;
-	y = rand() % 80;
-	for (int i = 0; i < snake1.getlang(); i++) {
-		int row = snake1.getsnakerow(i);
-		int colum = snake1.getsnakecolum(i);
-		for (;x== row && y==colum ;)
+	x = rand() % (SCREEN_HEIGHT-2) +1;
+	y = rand() % (SCREEN_WIDTH-2)+1;
+	for (int i = 0; i <=snake1.getlang(); i++) {
+		int row = snake1.getsnakerow(I-i);
+		int colum = snake1.getsnakecolum(I-i);
+		x = rand() % (SCREEN_HEIGHT - 2) + 1;
+		y = rand() % (SCREEN_WIDTH - 2) + 1;
+		if (x!= row && y!=colum )
 		{
-			x = rand() % 45;
-			y = rand() % 80;
-		}  
-	   checkPoint.setpoint(x,y);
+			checkPoint.setpoint(x, y);
+		}   
 	}	
 }
 
@@ -254,6 +347,7 @@ void gameController::drawcheekpoint( bool t)
 		screen->setChar(checkPoint.getrow(), checkPoint.getcolum(), 'B');
 		screen->flushScreen();
 	}
+
 	else {
 		screen->setChar(checkPoint.getrow(), checkPoint.getcolum(), ' ');
 		screen->flushScreen();
@@ -349,7 +443,7 @@ void gameController::score()
 {
 	if (snake1.getsnakerow(I)==checkPoint.getrow()&&snake1.getsnakecolum(I)==checkPoint.getcolum())
 	{
-		snake1.setlang();
+		snake1.addlang();
 		checkpoint();
 		drawcheekpoint();
 	}
@@ -357,13 +451,38 @@ void gameController::score()
 
 void gameController::gamestart()
 {
-	static int i = 0;
-	i = i++;
-	if (i == 1) {
-		checkpoint();
-		drawcheekpoint();
+	static int i_newgame = 0;
+	static int i_pause = 0;
+	static int i_continue = 0;
+	if (event.getstate()=="menu")
+	{
+		running();
 	}
-	snakemove();
+	if (event.getstate() == "newgame")
+	{	
+		snakemove();
+	}
+	if (event.getstate() == "continue")
+	{
+		snakemove();
+	}
+	if (event.getstate() == "pause")
+	{
+		running();
+	}
+	if (event.getstate() == "gameover")
+	{
+		running();
+	}
+}
+
+void gameController::dead()
+{
+	i_dead = 0;
+	initialize();
+	drawCursor();
+	drawMenu();
+	event.changestate("gameover");
 }
 
 string Snake::gethead()
@@ -371,7 +490,33 @@ string Snake::gethead()
 	return string(head);
 }
 
-void Snake::setlang()
+void Snake::resetlang()
+{
+
+	lang = 1;
+}
+
+void Snake::Health()
+{
+	for (int i = 1; i < getlang(); i++) {
+		if ( getsnakerow(I) == getsnakerow(I - i) && getsnakecolum(I) == getsnakecolum(I - i))
+		{
+			health = health - 1;
+		}
+	}
+}
+
+int Snake::getHealth()
+{
+	return health;
+}
+
+void Snake::resethealth()
+{
+	health = 1;
+}
+
+void Snake::addlang()
 {
 	lang = lang + 1;
 }
@@ -395,4 +540,14 @@ unsigned int point::getrow()
 unsigned int point::getcolum()
 {
 	return Colum;
+}
+
+void event::changestate(string st)
+{
+	state = st;
+}
+
+string event::getstate()
+{
+	return string(state);
 }
