@@ -46,6 +46,9 @@ public:
 	void setpoint(unsigned int row, unsigned int colum);
 	unsigned int getrow();
 	unsigned int getcolum();
+	bool operator==(point& b);
+	void setrow(unsigned int row);
+	void setcolum(unsigned int colum);
 };
 
 class Snake {
@@ -66,6 +69,7 @@ public:
 	void Health();
 	int getHealth();
 	void resethealth();
+	point getpoint(int i);
 };
 
 class gameController {
@@ -86,7 +90,7 @@ public:
 	void snakemove();
 	void upCursor();
 	void downCursor();
-	string Action();
+	string Action(string action="null",bool t=false);
 	void  running();
 	void initialize();
 	void checkpoint();
@@ -94,4 +98,11 @@ public:
 	void score();
 	void gamestart();
 	void dead();
+	point getsnakepoint(int i);
+	point getcheckpoint();
+	int getsnakelang();
+	string getsnakehead();
+	void changesnakehead(string t);
 };
+extern gameController gameCtrl;
+extern int I;

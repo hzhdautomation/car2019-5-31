@@ -24,12 +24,18 @@
     <ClCompile Include="gameController.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="autoController.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameController.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Drawing.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="autoController.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

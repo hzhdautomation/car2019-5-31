@@ -120,11 +120,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="autoController.cpp" />
     <ClCompile Include="Drawing.cpp" />
     <ClCompile Include="gameController.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="autoController.h" />
     <ClInclude Include="Drawing.h" />
     <ClInclude Include="gameController.h" />
   </ItemGroup>

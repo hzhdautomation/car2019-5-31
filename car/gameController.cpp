@@ -126,7 +126,7 @@ void gameController::snakemove()
 	}
 	else
 		{
-			hard = 2;
+			hard = 150;
 		}
 	if (i > hard) {
 		if (snake1.gethead() == "up")
@@ -183,8 +183,15 @@ void gameController::downCursor()
 	row = 13 + i_cursor * 2;
 }
 
-string gameController::Action()
+string gameController::Action(string action,bool t)
 {
+	if (t)
+	{
+		return action;
+
+	}
+	else
+	{
 		if (_kbhit()) {
 			char ch = _getch();
 			if (ch == 119) {//up
@@ -206,7 +213,8 @@ string gameController::Action()
 				return "enter";
 			}
 		}
-return "null";	
+		return "null";
+	}	
 }
 
 void gameController::running()
@@ -485,6 +493,31 @@ void gameController::dead()
 	event.changestate("gameover");
 }
 
+point gameController::getsnakepoint(int i)
+{
+	return snake1.getpoint(i);
+}
+
+point gameController::getcheckpoint()
+{
+	return checkPoint;
+}
+
+int gameController::getsnakelang()
+{
+	return snake1.getlang();
+}
+
+
+
+string gameController::getsnakehead()
+{
+	return snake1.gethead();
+}
+void gameController::changesnakehead(string t)
+{
+	snake1.changehead(t);
+}
 string Snake::gethead()
 {
 	return string(head);
@@ -516,6 +549,11 @@ void Snake::resethealth()
 	health = 1;
 }
 
+point Snake::getpoint(int i)
+{
+	return snakepoint[i];
+}
+
 void Snake::addlang()
 {
 	lang = lang + 1;
@@ -540,6 +578,27 @@ unsigned int point::getrow()
 unsigned int point::getcolum()
 {
 	return Colum;
+}
+
+bool point::operator==(point & b)
+{
+	if (this->getrow()==b.getrow()&&this->getcolum()==b.getcolum())
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void point::setrow(unsigned int row)
+{
+	Row = row;
+}
+
+void point::setcolum(unsigned int colum)
+{
+	Colum = colum;
 }
 
 void event::changestate(string st)
